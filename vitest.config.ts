@@ -1,11 +1,14 @@
 import { defineConfig } from 'vitest/config';
+import react from '@vitejs/plugin-react';
 import path from 'node:path';
 
 export default defineConfig({
+  plugins: [react()],
   test: {
     globals: true,
     environment: 'node',
     include: ['tests/**/*.test.ts', 'packages/**/*.test.ts'],
+    exclude: ['**/node_modules/**', '**/dist/**', 'packages/ui/**', 'tests/unit/ui/**'],
     testTimeout: 30000,
   },
   resolve: {
@@ -23,6 +26,7 @@ export default defineConfig({
       '@agentorg/chat-manager': path.resolve(__dirname, 'packages/chat-manager/src/index.ts'),
       '@agentorg/sdk': path.resolve(__dirname, 'packages/sdk/src/index.ts'),
       '@agentorg/cli': path.resolve(__dirname, 'packages/cli/src/index.ts'),
+      '@agentorg/ui': path.resolve(__dirname, 'packages/ui/src/index.ts'),
     },
   },
 });

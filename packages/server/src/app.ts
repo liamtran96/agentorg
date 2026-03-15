@@ -3,6 +3,12 @@ import cors from 'cors';
 import type { CompanyConfig, Task, TaskStatus, AuditEntry } from '@agentorg/core';
 import { TaskQueue } from '@agentorg/core';
 
+/** Extract a route param as a string (Express 5 returns string | string[]). */
+function param(req: Request, name: string): string {
+  const v = req.params[name];
+  return Array.isArray(v) ? v[0] : v;
+}
+
 /**
  * Options for creating the app with injected services.
  */
@@ -77,10 +83,11 @@ export function createApp(configOrOptions: CompanyConfig | AppOptions): Express 
   });
 
   app.get('/api/agents/:id', (req: Request, res: Response) => {
+    const id = param(req, 'id');
     const cfg = getConfig();
-    const agent = cfg.org[req.params.id];
+    const agent = cfg.org[id];
     if (!agent) {
-      res.status(404).json({ error: `Agent '${req.params.id}' not found` });
+      res.status(404).json({ error: `Agent '${id}' not found` });
       return;
     }
     res.json(agent);
@@ -90,7 +97,7 @@ export function createApp(configOrOptions: CompanyConfig | AppOptions): Express 
 
   app.post('/api/agents/:id/heartbeat', (req: Request, res: Response) => {
     try {
-      const agentId = req.params.id;
+      const agentId = param(req, 'id');
       const cfg = getConfig();
       const agent = cfg.org[agentId];
       if (!agent) {
@@ -128,7 +135,7 @@ export function createApp(configOrOptions: CompanyConfig | AppOptions): Express 
   });
 
   app.put('/api/tasks/:id/status', (req: Request, res: Response) => {
-    const taskId = req.params.id;
+    const taskId = param(req, 'id');
     const { status, result } = req.body;
 
     const task = taskQueue.get(taskId);
@@ -176,7 +183,7 @@ export function createApp(configOrOptions: CompanyConfig | AppOptions): Express 
   });
 
   app.put('/api/config/:section', (req: Request, res: Response) => {
-    const section = req.params.section;
+    const section = param(req, 'section');
 
     const ALLOWED_SECTIONS = [
       'company', 'org', 'governance', 'safety', 'heartbeats',
@@ -235,7 +242,7 @@ export function createApp(configOrOptions: CompanyConfig | AppOptions): Express 
         res.status(500).json({ error: String(err) });
       }
     } else {
-      (currentConfig as Record<string, unknown>)[section] = req.body;
+      (currentConfig as unknown as Record<string, unknown>)[section] = req.body;
       const { providers: _providers, ...safeConfig } = currentConfig;
       res.json(safeConfig);
     }

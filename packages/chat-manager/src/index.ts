@@ -7,3 +7,12 @@ export { parseNaturalLanguage } from './natural-lang.js';
 
 export { ApprovalManager } from './approvals.js';
 export type { ApprovalRecord, ApprovalStatus } from './approvals.js';
+
+export { TelegramAdapter } from './telegram.js';
+export type {
+  TelegramUpdate,
+  TelegramMessage,
+  TelegramOutgoingMessage,
+  TelegramAdapterConfig,
+  MessageHandler,
+} from './telegram.js';

@@ -1,0 +1,9 @@
+{
+  "/page": "app/page.js",
+  "/issues/page": "app/issues/page.js",
+  "/agents/page": "app/agents/page.js",
+  "/costs/page": "app/costs/page.js",
+  "/org/page": "app/org/page.js",
+  "/settings/page": "app/settings/page.js",
+  "/activity/page": "app/activity/page.js"
+}

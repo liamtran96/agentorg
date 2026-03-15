@@ -1,0 +1,38 @@
+@import "tailwindcss";
+
+@theme {
+  /* Claude-inspired color palette */
+  --color-background: oklch(0.985 0.002 75);    /* warm cream white */
+  --color-foreground: oklch(0.205 0.015 50);     /* warm dark brown-black */
+  --color-card: oklch(1 0 0);                     /* pure white cards */
+  --color-card-foreground: oklch(0.205 0.015 50);
+  --color-primary: oklch(0.62 0.16 45);           /* Claude terracotta/coral #D97757 */
+  --color-primary-foreground: oklch(0.99 0.005 75); /* cream on primary */
+  --color-secondary: oklch(0.96 0.008 75);        /* warm light cream */
+  --color-secondary-foreground: oklch(0.35 0.02 50);
+  --color-muted: oklch(0.96 0.006 75);            /* warm muted cream */
+  --color-muted-foreground: oklch(0.50 0.01 50);  /* warm gray */
+  --color-accent: oklch(0.94 0.012 55);           /* warm accent hover */
+  --color-accent-foreground: oklch(0.25 0.02 50);
+  --color-destructive: oklch(0.577 0.245 27.325);
+  --color-destructive-foreground: oklch(0.99 0 0);
+  --color-border: oklch(0.91 0.008 75);           /* warm border */
+  --color-input: oklch(0.91 0.008 75);
+  --color-ring: oklch(0.62 0.16 45);              /* Claude terracotta ring */
+  --radius: 0.625rem;
+
+  /* Sidebar — slightly deeper warm tone */
+  --color-sidebar: oklch(0.975 0.005 70);
+  --color-sidebar-border: oklch(0.90 0.01 70);
+}
+
+body {
+  background-color: var(--color-background);
+  color: var(--color-foreground);
+  font-family: 'Söhne', system-ui, -apple-system, sans-serif;
+}
+
+/* Smooth transitions for interactive elements */
+* {
+  @apply transition-colors duration-100;
+}

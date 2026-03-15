@@ -1,1 +1,16 @@
-{ "name": "@agentorg/chat-manager", "version": "0.1.0", "private": true, "main": "dist/index.js", "types": "dist/index.d.ts", "scripts": { "build": "tsc", "dev": "tsc --watch", "test": "vitest run", "typecheck": "tsc --noEmit" } }
+{
+  "name": "@agentorg/chat-manager",
+  "version": "0.1.0",
+  "private": true,
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@agentorg/core": "workspace:*"
+  }
+}
