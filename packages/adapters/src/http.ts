@@ -1,5 +1,6 @@
 import type { AgentConfig, Task, TaskContext, TaskResult, HeartbeatResult } from '@agentorg/core';
 import type { AgentAdapter } from './base.js';
+import { createDefaultHeartbeatResult, createFailedTaskResult } from './base.js';
 
 /**
  * Generic HTTP adapter — plug in ANY agent runtime.
@@ -39,34 +40,32 @@ export class HTTPAdapter implements AgentAdapter {
 
       const data = await response.json() as Record<string, any>;
 
+      const output = data.output || data.result || JSON.stringify(data);
+
+      if (!response.ok) {
+        return {
+          success: false,
+          output,
+          tokensUsed: data.tokensUsed || 0,
+          cost: data.cost || 0,
+          actions: [],
+          error: `HTTP ${response.status}`,
+        };
+      }
+
       return {
-        success: response.ok,
-        output: data.output || data.result || JSON.stringify(data),
+        success: true,
+        output,
         tokensUsed: data.tokensUsed || 0,
         cost: data.cost || 0,
         actions: [],
       };
     } catch (err) {
-      return {
-        success: false,
-        output: '',
-        tokensUsed: 0,
-        cost: 0,
-        actions: [],
-        error: String(err),
-      };
+      return createFailedTaskResult(err);
     }
   }
 
   async heartbeat(agent: AgentConfig): Promise<HeartbeatResult> {
-    return {
-      agentId: agent.id,
-      runtime: this.runtime,
-      timestamp: new Date(),
-      checked: { taskQueue: 0, inbox: 0, deadlines: 0, alerts: 0 },
-      acted: { tasksCompleted: 0, messagesReplied: 0, escalations: [], delegations: [] },
-      tokensUsed: 0,
-      nextHeartbeat: new Date(Date.now() + 60 * 60 * 1000),
-    };
+    return createDefaultHeartbeatResult(agent.id, this.runtime, 60 * 60 * 1000);
   }
 }

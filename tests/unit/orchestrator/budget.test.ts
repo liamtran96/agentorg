@@ -3,9 +3,9 @@ import { Orchestrator } from '@agentorg/core';
 import type { CompanyConfig, ActionRecord } from '@agentorg/core';
 
 const testConfig: CompanyConfig = {
-  company: { name: 'Test Co', description: '', timezone: 'UTC', businessHours: '09:00-18:00', outOfHoursReply: '' },
+  company: { name: 'Test Co', description: '', timezone: 'UTC', businessHours: '09:00-18:00' },
   org: {
-    writer: { id: 'writer', name: 'Maya', role: 'writer', runtime: 'claude-agent-sdk', personality: '', budget: 1, reportsTo: 'ceo', skills: ['browser'] },
+    writer: { id: 'writer', name: 'Maya', role: 'writer', runtime: 'claude-agent-sdk', personality: '', budget: 1, reportsTo: 'ceo', skills: ['browser'], heartbeat: { schedule: '0 */2 * * *', tasks: [] } },
   },
 };
 

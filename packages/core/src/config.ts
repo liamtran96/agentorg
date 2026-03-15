@@ -24,9 +24,11 @@ export class ConfigManager {
     return this.config;
   }
 
-  /** Get current config */
+  /** Get current config (throws if load() has not been called) */
   getCurrent(): CompanyConfig {
-    if (!this.config) return this.load();
+    if (!this.config) {
+      throw new Error('Config not loaded. Call load() first.');
+    }
     return this.config;
   }
 
@@ -54,6 +56,8 @@ export class ConfigManager {
     this.watchers.push(callback);
   }
 
+  private watcher: { close: () => Promise<void> } | null = null;
+
   /** Start watching the file for external changes */
   async startWatching(): Promise<void> {
     const { watch } = await import('chokidar');
@@ -66,6 +70,15 @@ export class ConfigManager {
         console.error('[config] Failed to reload:', err);
       }
     });
+    this.watcher = watcher;
+  }
+
+  /** Stop watching the file for changes */
+  stopWatching(): void {
+    if (this.watcher) {
+      this.watcher.close();
+      this.watcher = null;
+    }
   }
 
   private notifyWatchers(): void {
@@ -110,7 +123,7 @@ export class ConfigManager {
         name: raw.company?.name || 'My Company',
         description: raw.company?.description || '',
         timezone: raw.company?.timezone || 'UTC',
-        businessHours: raw.company?.business_hours || '09:00-18:00',
+        businessHours: raw.company?.businessHours || raw.company?.business_hours || '09:00-18:00',
         outOfHoursReply: raw.company?.out_of_hours_reply || 'We will reply during business hours.',
       },
       org,
