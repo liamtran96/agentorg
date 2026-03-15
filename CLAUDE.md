@@ -74,11 +74,9 @@ All core packages are implemented with 61 test files and 555 passing tests.
 - **Templates:** content-agency (6 agents), ecommerce-support (5 agents), saas-builder (6 agents)
 
 **What needs building next (priority order):**
-1. React dashboard (packages/ui/) — Vite + Tailwind
-2. Telegram/WhatsApp/Discord chat adapters
-3. BullMQ + Redis job queue for persistent task processing
-4. PostgreSQL support via Drizzle ORM for production
-5. Docker deployment (Dockerfile, production compose)
+1. BullMQ + Redis job queue for persistent task processing
+2. PostgreSQL support via Drizzle ORM for production
+3. WhatsApp/Discord chat adapters
 
 ## Commands
 

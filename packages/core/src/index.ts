@@ -13,3 +13,5 @@ export { AgentCommunicator } from './agent-comm.js';
 export { ErrorRecovery } from './error-recovery.js';
 export { MetricsCollector } from './metrics-collector.js';
 export { Database } from './database.js';
+export { JobQueue } from './job-queue.js';
+export * from './db/index.js';
