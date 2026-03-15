@@ -19,23 +19,25 @@ AgentOrg is a universal orchestration framework for AI agent companies. One pers
 
 ```
 packages/
-  core/          — Orchestrator (6-check pipeline), OrgChart, TaskQueue, BudgetTracker, HeartbeatScheduler
-  safety/        — Fact-check, brand-check, hallucination guard
-  adapters/      — Runtime adapters: claude-agent-sdk, anthropic-api, openclaw, codex, http, script
-  skills/        — Native skills: browser (Puppeteer), email (SMTP), filesystem, CRM, invoicing, calendar
-  memory/        — Per-agent memory, personality persistence, knowledge base, vector store
-  optimizer/     — Token optimization: model routing, cache, context pruning, prompt caching, batching
-  skill-graph/   — DAG workflow engine, dependency resolver, capability tree
-  server/        — Express API + WebSocket + heartbeat cron scheduler
-  cli/           — npx agentorg init/start/doctor/scale
-  chat-manager/  — Telegram/WhatsApp management commands + NLP parsing
-  sdk/           — @agentorg/sdk for plugin developers
-  ui/            — React dashboard
+  core/          — Orchestrator (6 checks), OrgChart, TaskQueue, BudgetTracker, HeartbeatScheduler,
+                   ConfigManager, AuditLog, IncidentLog, InboxRouter, DeadlineTracker,
+                   AgentCommunicator, ErrorRecovery, MetricsCollector, Database (SQLite)
+  server/        — Express REST API (13 routes) + WebSocket broadcast server
+  adapters/      — Runtime adapters: Claude Agent SDK, Anthropic API, HTTP
+  skills/        — SkillRegistry + Browser, Email, Filesystem, CRM, Calendar, Invoicing, Messaging
+  safety/        — FactChecker, BrandChecker, HallucinationGuard, ThreadIsolator
+  memory/        — AgentMemory, KnowledgeBase, SourceOfTruth
+  optimizer/     — ModelRouter, ResponseCache, ContextPruner, Compressor
+  skill-graph/   — DependencyResolver, DAGExecutor, CapabilityTree
+  chat-manager/  — Command parser, NLP parser, ApprovalManager
+  sdk/           — createSkill(), createAdapter() for plugin developers
+  cli/           — npx agentorg init/start/doctor
+  ui/            — React dashboard (planned)
 tests/
-  unit/          — Orchestrator checks, safety, skill-graph
-  integration/   — Multi-package tests
-  e2e/           — Full flow tests
-templates/       — Company YAML templates (content-agency, ecommerce-support, etc.)
+  unit/          — 40+ test suites across all packages
+  integration/   — Config-to-orchestrator, heartbeat flow, server API, governance
+  e2e/           — Full workday simulation
+templates/       — content-agency, ecommerce-support, saas-builder
 docs/            — TECHNICAL_SPEC.md has the full 3,400-line engineering blueprint
 ```
 
@@ -55,16 +57,28 @@ docs/            — TECHNICAL_SPEC.md has the full 3,400-line engineering bluep
 
 ## Current State
 
-Phase 1 scaffold is done. The orchestrator (packages/core/src/orchestrator.ts) has the 6-check pipeline implemented with permission check working. OrgChart, TaskQueue, BudgetTracker, and HeartbeatScheduler are scaffolded with interfaces.
+All core packages are implemented with 61 test files and 555 passing tests.
 
-**What's working:** Project structure, TypeScript interfaces, orchestrator permission check, first test
+**What's built:**
+- **Core:** Orchestrator (all 6 checks), OrgChart, TaskQueue, BudgetTracker, HeartbeatScheduler (node-cron), ConfigManager (YAML hot-reload), AuditLog, IncidentLog, InboxRouter, DeadlineTracker, AgentCommunicator, ErrorRecovery, MetricsCollector, Database (SQLite)
+- **Server:** Express REST API (13 routes), WebSocket broadcast server
+- **Adapters:** AnthropicAPIAdapter, ClaudeAgentSDKAdapter, HTTPAdapter
+- **Skills:** SkillRegistry, FilesystemSkill, BrowserSkill, EmailSkill, CRMSkill, CalendarSkill, InvoicingSkill, MessagingSkill
+- **Safety:** FactChecker, BrandChecker, HallucinationGuard, ThreadIsolator
+- **Memory:** AgentMemory, KnowledgeBase, SourceOfTruth
+- **Optimizer:** ModelRouter, ResponseCache, ContextPruner, Compressor
+- **Skill Graph:** DependencyResolver, DAGExecutor, CapabilityTree
+- **Chat Manager:** parseCommand, parseNaturalLanguage, ApprovalManager
+- **SDK:** createSkill(), createAdapter()
+- **CLI:** initProject, startServer, runDoctor
+- **Templates:** content-agency (6 agents), ecommerce-support (5 agents), saas-builder (6 agents)
 
 **What needs building next (priority order):**
-1. Server that loads YAML config and starts (packages/server/)
-2. CLI wizard: `npx agentorg init` and `npx agentorg start` (packages/cli/)
-3. Claude Agent SDK adapter that actually executes tasks (packages/adapters/claude-agent-sdk/)
-4. Heartbeat scheduler with real cron (packages/core/src/heartbeat.ts)
-5. Content-agency template running end-to-end
+1. React dashboard (packages/ui/) — Vite + Tailwind
+2. Telegram/WhatsApp/Discord chat adapters
+3. BullMQ + Redis job queue for persistent task processing
+4. PostgreSQL support via Drizzle ORM for production
+5. Docker deployment (Dockerfile, production compose)
 
 ## Commands
 
@@ -89,8 +103,10 @@ pnpm typecheck        # TypeScript type checking
 
 ## Important Files
 
-- `docs/TECHNICAL_SPEC.md` — Full 3,400-line engineering spec. Read this for complete interface definitions, YAML config format, security model, deployment options, and roadmap.
-- `templates/content-agency.yaml` — The first template. 6 agents with personalities, heartbeats, governance rules.
-- `packages/core/src/orchestrator.ts` — The 6-check policy engine. This is the most critical file.
-- `packages/core/src/types.ts` — All shared TypeScript types.
-- `packages/adapters/base.ts` — The adapter interface every runtime implements.
+- `packages/core/src/orchestrator/index.ts` — The 6-check policy engine. Most critical file.
+- `packages/core/src/types.ts` — All shared TypeScript types (~300 lines).
+- `packages/server/src/app.ts` — Express REST API with 13 routes.
+- `packages/core/src/database.ts` — SQLite database (tasks, audit, incidents, contacts, deals).
+- `packages/adapters/src/base.ts` — AgentAdapter interface + shared helpers.
+- `templates/content-agency.yaml` — Reference template: 6-agent content company.
+- `docs/TECHNICAL_SPEC.md` — Full 3,400-line engineering spec.
