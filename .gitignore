@@ -9,3 +9,11 @@ dist/
 coverage/
 *.sqlite
 *.sqlite3
+
+# Next.js
+packages/ui/.next/
+packages/ui/out/
+
+# Build outputs
+*.tsbuildinfo
+
