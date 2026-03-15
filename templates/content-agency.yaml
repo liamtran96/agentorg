@@ -1,0 +1,114 @@
+# AgentOrg Template: Content Agency
+# 6 agents, ~$65/month in LLM costs
+# For solo founders running an SEO content agency
+
+company:
+  name: "My Content Agency"
+  description: "SEO content agency powered by AI agents"
+  timezone: "UTC"
+  business_hours: "09:00-18:00"
+
+org:
+  ceo:
+    name: Alex
+    runtime: claude-agent-sdk
+    model: claude-sonnet-4-20250514
+    personality: |
+      You are Alex, the CEO. You delegate tasks, review deliverables,
+      and report to the founder. Strategic and concise.
+    budget: 15
+    reports_to: board
+    skills: [browser, email, calendar]
+    heartbeat:
+      schedule: "0 */4 * * *"
+      tasks: [review_agents, check_escalations, plan_priorities, send_digest]
+
+  content_writer:
+    name: Maya
+    runtime: claude-agent-sdk
+    model: claude-sonnet-4-20250514
+    personality: |
+      You are Maya, a research-driven content writer. You write long-form
+      SEO blog posts. Casual-professional tone. Data-backed arguments.
+    budget: 15
+    reports_to: ceo
+    skills: [browser, filesystem]
+    heartbeat:
+      schedule: "0 */2 * * *"
+      tasks: [check_task_queue, check_review_feedback, continue_drafts]
+
+  seo_analyst:
+    name: Kai
+    runtime: anthropic-api
+    model: claude-haiku-4-5-20251001
+    personality: |
+      You are Kai, the SEO specialist. You research keywords, analyze
+      competitors, and provide data to the content team.
+    budget: 8
+    reports_to: ceo
+    skills: [browser]
+    heartbeat:
+      schedule: "0 */3 * * *"
+      tasks: [keyword_research, competitor_analysis]
+
+  editor:
+    name: Linh
+    runtime: anthropic-api
+    model: claude-sonnet-4-20250514
+    personality: |
+      You are Linh, the editor. You review drafts for grammar, tone,
+      and brand consistency. You give specific, actionable feedback.
+    budget: 10
+    reports_to: ceo
+    skills: [filesystem]
+    heartbeat:
+      schedule: "0 */2 * * *"
+      tasks: [check_review_queue]
+
+  social_media:
+    name: Sam
+    runtime: anthropic-api
+    model: claude-haiku-4-5-20251001
+    personality: |
+      You are Sam, the social media manager. You create punchy posts
+      from blog content. You know each platform's best practices.
+    budget: 5
+    reports_to: ceo
+    skills: [messaging]
+    heartbeat:
+      schedule: "*/30 * * * *"
+      tasks: [post_scheduled, check_engagement]
+
+  account_manager:
+    name: James
+    runtime: anthropic-api
+    model: claude-haiku-4-5-20251001
+    personality: |
+      You are James, the account manager. You email clients with updates,
+      share published content, and handle client requests.
+    budget: 7
+    reports_to: ceo
+    skills: [email, crm]
+    heartbeat:
+      schedule: "0 */4 * * *"
+      tasks: [check_client_inbox, send_updates]
+
+governance:
+  rules:
+    - action: "email.send_external"
+      condition: "always"
+      outcome: require_approval
+    - action: "refund"
+      condition: "amount > 50"
+      outcome: require_approval
+    - action: "support.reply"
+      condition: "always"
+      outcome: auto_approve
+
+interfaces:
+  dashboard:
+    enabled: true
+    port: 3100
+  telegram:
+    enabled: true
+    management_commands: true

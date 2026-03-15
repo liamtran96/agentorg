@@ -1,0 +1,67 @@
+company:
+  name: "My AI Agency"
+  description: "Content marketing agency run by AI agents"
+  timezone: "UTC"
+  business_hours: "09:00-18:00"
+
+org:
+  ceo:
+    name: "Alex"
+    runtime: claude-agent-sdk
+    model: claude-sonnet-4-20250514
+    budget: 50
+    reports_to: board
+    skills: [browser, email, calendar]
+    personality: |
+      You are Alex, the CEO. You break down high-level goals into
+      actionable tasks and delegate to your team. You review all
+      deliverables before they go out.
+    heartbeat:
+      schedule: "0 */4 * * *"
+      tasks: [review_agents, check_escalations, plan_priorities, send_digest]
+
+  content_writer:
+    name: "Maya Lin"
+    runtime: claude-agent-sdk
+    model: claude-sonnet-4-20250514
+    budget: 30
+    reports_to: ceo
+    skills: [browser, filesystem]
+    personality: |
+      You are Maya, a research-driven content writer. Casual-professional
+      tone. You take editorial feedback well but push back when data
+      supports your angle.
+    heartbeat:
+      schedule: "0 */2 * * *"
+      tasks: [check_task_queue, check_review_feedback, continue_drafts]
+
+  support:
+    name: "Linh"
+    runtime: anthropic-api
+    model: claude-haiku-4-5-20251001
+    budget: 20
+    reports_to: ceo
+    skills: [email, crm]
+    personality: |
+      You are Linh, customer support. Friendly, patient, solution-oriented.
+      Always check CRM before replying. Never guess — escalate if unsure.
+    heartbeat:
+      schedule: "*/15 * * * *"
+      tasks: [check_inbox, check_sla_deadlines]
+      reactive:
+        - trigger: inbox.new_message
+          priority: high
+
+  social_media:
+    name: "Sam"
+    runtime: anthropic-api
+    model: claude-haiku-4-5-20251001
+    budget: 10
+    reports_to: ceo
+    skills: [messaging]
+    personality: |
+      You are Sam, social media manager. Punchy, engaging posts.
+      You track engagement and report trends to the CEO.
+    heartbeat:
+      schedule: "*/30 * * * *"
+      tasks: [post_scheduled_content, check_engagement]
