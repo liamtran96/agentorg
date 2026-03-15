@@ -22,6 +22,7 @@ export default defineConfig({
       '@agentorg/server': path.resolve(__dirname, 'packages/server/src/index.ts'),
       '@agentorg/chat-manager': path.resolve(__dirname, 'packages/chat-manager/src/index.ts'),
       '@agentorg/sdk': path.resolve(__dirname, 'packages/sdk/src/index.ts'),
+      '@agentorg/cli': path.resolve(__dirname, 'packages/cli/src/index.ts'),
     },
   },
 });

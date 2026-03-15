@@ -23,6 +23,91 @@ const TEMPLATES: Record<string, { description: string; agents: Record<string, an
   },
 };
 
+/** Options for the programmatic init function. */
+export interface InitOptions {
+  companyName: string;
+  template: string;
+  outputDir: string;
+  apiKey?: string;
+}
+
+/** Result returned by initProject. */
+export interface InitResult {
+  success: boolean;
+  configPath: string;
+  envPath: string;
+  agentCount: number;
+}
+
+/**
+ * Generate YAML config lines from a company name and template.
+ * Shared between interactive init() and programmatic initProject().
+ */
+function generateConfigLines(companyName: string, template: { description: string; agents: Record<string, any> }): string[] {
+  const configLines = [
+    `company:`,
+    `  name: "${companyName}"`,
+    `  description: "${template.description}"`,
+    `  timezone: "UTC"`,
+    `  business_hours: "09:00-18:00"`,
+    ``,
+    `org:`,
+  ];
+
+  for (const [id, agent] of Object.entries(template.agents)) {
+    configLines.push(`  ${id}:`);
+    configLines.push(`    name: "${agent.name}"`);
+    configLines.push(`    runtime: ${agent.runtime}`);
+    configLines.push(`    model: ${agent.model}`);
+    configLines.push(`    budget: ${agent.budget}`);
+    configLines.push(`    reports_to: ${agent.reports_to}`);
+    configLines.push(`    skills: [${agent.skills.join(', ')}]`);
+    configLines.push(`    personality: |`);
+    configLines.push(`      ${agent.personality}`);
+    configLines.push(``);
+  }
+
+  return configLines;
+}
+
+/**
+ * Programmatic project initialisation.
+ * Creates an agentorg.config.yaml and .env file in the given output directory.
+ */
+export async function initProject(options: InitOptions): Promise<InitResult> {
+  const { companyName, template, outputDir, apiKey } = options;
+
+  const selectedTemplate = TEMPLATES[template];
+  if (!selectedTemplate) {
+    throw new Error(`Unknown template: ${template}`);
+  }
+
+  // Verify output directory is writable
+  try {
+    fs.accessSync(outputDir, fs.constants.W_OK);
+  } catch {
+    throw new Error(`Output directory is not writable: ${outputDir}`);
+  }
+
+  const configLines = generateConfigLines(companyName, selectedTemplate);
+
+  const configPath = path.join(outputDir, 'agentorg.config.yaml');
+  fs.writeFileSync(configPath, configLines.join('\n'), 'utf-8');
+
+  const envPath = path.join(outputDir, '.env');
+  fs.writeFileSync(envPath, `ANTHROPIC_API_KEY=${apiKey || 'sk-ant-YOUR-KEY'}\n`, 'utf-8');
+
+  return {
+    success: true,
+    configPath,
+    envPath,
+    agentCount: Object.keys(selectedTemplate.agents).length,
+  };
+}
+
+/**
+ * Interactive CLI init command (prompts the user).
+ */
 export async function init(): Promise<void> {
   const prompts = (await import('prompts')).default;
 
@@ -58,30 +143,7 @@ export async function init(): Promise<void> {
   }
 
   const template = TEMPLATES[response.template];
-
-  // Generate YAML config
-  const configLines = [
-    `company:`,
-    `  name: "${response.companyName}"`,
-    `  description: "${template.description}"`,
-    `  timezone: "UTC"`,
-    `  business_hours: "09:00-18:00"`,
-    ``,
-    `org:`,
-  ];
-
-  for (const [id, agent] of Object.entries(template.agents)) {
-    configLines.push(`  ${id}:`);
-    configLines.push(`    name: "${agent.name}"`);
-    configLines.push(`    runtime: ${agent.runtime}`);
-    configLines.push(`    model: ${agent.model}`);
-    configLines.push(`    budget: ${agent.budget}`);
-    configLines.push(`    reports_to: ${agent.reports_to}`);
-    configLines.push(`    skills: [${agent.skills.join(', ')}]`);
-    configLines.push(`    personality: |`);
-    configLines.push(`      ${agent.personality}`);
-    configLines.push(``);
-  }
+  const configLines = generateConfigLines(response.companyName, template);
 
   // Write files
   const configPath = path.join(process.cwd(), 'agentorg.config.yaml');

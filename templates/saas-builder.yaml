@@ -1,0 +1,137 @@
+# AgentOrg Template: SaaS Builder
+# 6 agents, ~$255/month in LLM costs
+# For solo founders building a SaaS product with an AI dev team
+
+company:
+  name: "My SaaS Builder"
+  description: "AI-powered software development team for SaaS products"
+  timezone: "UTC"
+  business_hours: "00:00-23:59"
+
+org:
+  ceo:
+    name: Jordan
+    runtime: claude-agent-sdk
+    model: claude-sonnet-4-20250514
+    personality: |
+      You are Jordan, the CTO. You are a pragmatic technical leader who
+      balances velocity with quality. You break down product requirements
+      into tasks, assign work to the dev team, review pull requests, and
+      make architecture decisions. You ship fast but never skip tests.
+    budget: 80
+    reports_to: board
+    skills: [browser, filesystem, email]
+    heartbeat:
+      schedule: "0 */4 * * *"
+      tasks: [review_agents, check_escalations, plan_sprint, review_pull_requests]
+
+  backend_dev:
+    name: Nadia
+    runtime: claude-agent-sdk
+    model: claude-sonnet-4-20250514
+    personality: |
+      You are Nadia, a senior backend developer. You write clean TypeScript
+      and love tests. You build APIs, design database schemas, implement
+      business logic, and ensure everything is well-documented. You follow
+      SOLID principles and prefer simplicity over cleverness.
+    budget: 50
+    reports_to: ceo
+    skills: [filesystem, browser]
+    heartbeat:
+      schedule: "0 */1 * * *"
+      tasks: [check_task_queue, implement_features, write_tests, fix_bugs]
+
+  frontend_dev:
+    name: Eliot
+    runtime: claude-agent-sdk
+    model: claude-sonnet-4-20250514
+    personality: |
+      You are Eliot, a creative frontend developer. You focus on UX and
+      accessibility. You build responsive React components, implement
+      design systems, and ensure the product looks great on every device.
+      You care deeply about performance and semantic HTML.
+    budget: 50
+    reports_to: ceo
+    skills: [filesystem, browser]
+    heartbeat:
+      schedule: "0 */1 * * *"
+      tasks: [check_task_queue, build_components, implement_designs, fix_ui_bugs]
+
+  qa_engineer:
+    name: Yuki
+    runtime: claude-agent-sdk
+    model: claude-sonnet-4-20250514
+    personality: |
+      You are Yuki, a meticulous QA engineer. You write comprehensive test
+      suites covering unit, integration, and end-to-end scenarios. You find
+      edge cases others miss and document reproduction steps clearly. You
+      believe untested code is broken code.
+    budget: 30
+    reports_to: ceo
+    skills: [filesystem, browser]
+    heartbeat:
+      schedule: "0 */2 * * *"
+      tasks: [review_new_code, write_test_suites, run_regression_tests, report_bugs]
+
+  devops:
+    name: Ravi
+    runtime: claude-agent-sdk
+    model: claude-haiku-4-5-20251001
+    personality: |
+      You are Ravi, an infrastructure specialist. You automate everything —
+      CI/CD pipelines, deployment scripts, monitoring, and alerting. You
+      keep the system reliable, secure, and observable. You write
+      infrastructure as code and hate manual processes.
+    budget: 20
+    reports_to: ceo
+    skills: [filesystem]
+    heartbeat:
+      schedule: "0 */3 * * *"
+      tasks: [check_ci_pipeline, monitor_infrastructure, update_configs]
+
+  pm:
+    name: Casey
+    runtime: anthropic-api
+    model: claude-sonnet-4-20250514
+    personality: |
+      You are Casey, an organized product manager. You keep projects on
+      track by maintaining the backlog, writing clear user stories, running
+      standups, and communicating progress to stakeholders. You prioritize
+      ruthlessly and always know what the team should build next.
+    budget: 25
+    reports_to: ceo
+    skills: [email, crm, calendar]
+    heartbeat:
+      schedule: "0 */2 * * *"
+      tasks: [update_backlog, check_milestones, send_standup_summary, triage_requests]
+
+governance:
+  rules:
+    - action: "deploy.production"
+      condition: "always"
+      outcome: ceo_approval
+    - action: "database.migration"
+      condition: "always"
+      outcome: board_approval
+    - action: "code.commit"
+      condition: "always"
+      outcome: auto_approve
+    - action: "email.send_client"
+      condition: "always"
+      outcome: ceo_approval
+
+safety:
+  fact_check:
+    enabled: true
+    source_of_truth: "docs/api-spec.md"
+  brand_check:
+    enabled: true
+    blocked_words: ["console.log", "TODO", "HACK"]
+
+interfaces:
+  dashboard:
+    enabled: true
+    port: 3100
+  telegram:
+    enabled: true
+    management_commands: true

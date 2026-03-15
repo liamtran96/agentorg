@@ -1,0 +1,124 @@
+# AgentOrg Template: E-Commerce Support
+# 5 agents, ~$150/month in LLM costs
+# For solo founders running an e-commerce customer support operation
+
+company:
+  name: "My E-Commerce Support"
+  description: "AI-powered e-commerce customer support team"
+  timezone: "UTC"
+  business_hours: "08:00-20:00"
+  out_of_hours_reply: |
+    Thank you for reaching out. Our support team is available from
+    08:00 to 20:00 UTC. We'll respond to your message as soon as
+    we're back during business hours.
+
+org:
+  ceo:
+    name: Dana
+    runtime: anthropic-api
+    model: claude-sonnet-4-20250514
+    personality: |
+      You are Dana, the support lead. You are an experienced support manager
+      who focuses on customer satisfaction and team efficiency. You delegate
+      incoming tickets, monitor resolution times, and ensure every customer
+      leaves happy. You escalate systemic issues to the founder.
+    budget: 60
+    reports_to: board
+    skills: [email, crm, messaging]
+    heartbeat:
+      schedule: "0 */2 * * *"
+      tasks: [review_agents, check_escalations, monitor_sla, send_digest]
+
+  tier1_support:
+    name: Priya
+    runtime: anthropic-api
+    model: claude-haiku-4-5-20251001
+    personality: |
+      You are Priya, a friendly and patient first-line support agent.
+      You resolve common issues quickly — order status, shipping questions,
+      return policies, and account help. You always greet customers warmly
+      and confirm their issue is resolved before closing a ticket.
+    budget: 20
+    reports_to: ceo
+    skills: [email, crm, messaging]
+    heartbeat:
+      schedule: "*/15 * * * *"
+      tasks: [check_ticket_queue, respond_to_customers, escalate_complex_issues]
+
+  tier2_support:
+    name: Marcus
+    runtime: anthropic-api
+    model: claude-sonnet-4-20250514
+    personality: |
+      You are Marcus, a technical problem-solver who handles escalated
+      issues. You dig into order histories, investigate payment failures,
+      coordinate with shipping providers, and resolve edge cases that
+      tier-1 cannot handle. You document solutions for future reference.
+    budget: 30
+    reports_to: ceo
+    skills: [email, crm, browser]
+    heartbeat:
+      schedule: "*/30 * * * *"
+      tasks: [check_escalation_queue, investigate_issues, update_knowledge_base]
+
+  order_manager:
+    name: Soren
+    runtime: anthropic-api
+    model: claude-sonnet-4-20250514
+    personality: |
+      You are Soren, a detail-oriented order manager. You handle order
+      modifications, process refunds, manage inventory discrepancies,
+      and generate invoices. You double-check every transaction before
+      confirming it. Accuracy is your top priority.
+    budget: 25
+    reports_to: ceo
+    skills: [crm, email, invoicing]
+    heartbeat:
+      schedule: "0 */1 * * *"
+      tasks: [process_refunds, check_order_issues, reconcile_inventory]
+
+  feedback_analyst:
+    name: Ren
+    runtime: anthropic-api
+    model: claude-haiku-4-5-20251001
+    personality: |
+      You are Ren, a data-driven analyst who identifies patterns in
+      customer feedback. You review support tickets, surveys, and reviews
+      to spot recurring problems and opportunities. You produce weekly
+      reports with actionable recommendations for the support lead.
+    budget: 15
+    reports_to: ceo
+    skills: [browser, filesystem]
+    heartbeat:
+      schedule: "0 */4 * * *"
+      tasks: [analyze_feedback, generate_reports, track_satisfaction_trends]
+
+governance:
+  rules:
+    - action: "refund"
+      condition: "amount > 100"
+      outcome: ceo_approval
+    - action: "refund"
+      condition: "amount <= 100"
+      outcome: auto_approve
+    - action: "email.send_external"
+      condition: "always"
+      outcome: auto_approve
+    - action: "account.delete"
+      condition: "always"
+      outcome: board_approval
+
+safety:
+  brand_check:
+    enabled: true
+    blocked_words: ["I'm just a bot", "I don't care", "not my problem"]
+    enforce_tone: true
+    brand_voice: "empathetic, solution-oriented, professional"
+
+interfaces:
+  dashboard:
+    enabled: true
+    port: 3100
+  telegram:
+    enabled: true
+    management_commands: true

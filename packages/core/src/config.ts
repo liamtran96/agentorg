@@ -34,12 +34,18 @@ export class ConfigManager {
 
   /** Update a config value and write back to YAML */
   update(keyPath: string, value: unknown): void {
+    // Block prototype pollution via key path
+    const FORBIDDEN_KEYS = new Set(['__proto__', 'constructor', 'prototype']);
+    const keys = keyPath.split('.');
+    if (keys.some(k => FORBIDDEN_KEYS.has(k))) {
+      throw new Error(`Invalid config key path: "${keyPath}"`);
+    }
+
     if (!this.config) this.load();
     const raw = fs.readFileSync(this.filePath, 'utf-8');
     const doc = YAML.parseDocument(raw);
 
     // Navigate YAML AST and set value
-    const keys = keyPath.split('.');
     let node: any = doc;
     for (let i = 0; i < keys.length - 1; i++) {
       node = node.get(keys[i], true);
